@@ -1,47 +1,43 @@
 # SAINI AI — 12-week research roadmap
 
-**Status: proposed.** The schedule starts only after an environment and baseline dataset are ready. All milestones are contingent on hardware access and upstream model compatibility.
+**Status: proposed; no model training or benchmark completion claimed.** Priorities are **Qwen3.8 27B first**, then **Gemma 4 26B-A4B**. All other models are explicitly deferred until the first two experiments have meaningful results or a documented infeasibility verdict.
 
-## Week 1–2: Reproducible baseline
-- Confirm checkpoint names, exact revisions, licenses, usage restrictions and download sizes.
-- Build a permissioned, versioned multilingual evaluation set with held-out items.
-- Define a stable evaluation harness for task success, formatting compliance, latency and memory.
-- Run a tiny smoke test without adapting a model; record reproducibility manifest.
-- **Exit gate:** baseline results are saved with model revision, dataset version and hardware manifest.
+## Week 1–2: Environment and license verification for both target models
+- Confirm exact downloadable checkpoint paths, revisions, licenses and tokenizer/model architecture.
+- Check compatibility with available LoRA/QLoRA training code, especially Gemma 4's mixture-of-experts architecture.
+- Run the separate [GPU preflight notebook](notebooks/00_gpu_preflight.ipynb) on Kaggle to record GPU type, VRAM, CPU RAM, disk, Python/PyTorch/CUDA versions and free quota availability.
+- Design a permissioned, versioned Hindi/Punjabi/Haryanvi/English dataset with held-out evaluation items.
+- **Exit gate:** a model-specific feasibility decision and a dataset manifest, without downloading huge weights blindly.
 
-## Week 3–4: First parameter-efficient experiment
-- Start with a Qwen3-14B LoRA/QLoRA feasibility test on a free GPU when allocated.
-- Use a controlled dataset and split; log hyperparameters, time, GPU peak VRAM and failures.
-- Compare baseline and adapter under identical evaluation settings.
-- **Exit gate:** a reproducible result, including regressions, or a documented limitation.
+## Week 3–5: Experiment 001 — Qwen3.8 27B
+- Follow [EXP001](experiments/EXP001_QWEN38_27B.md).
+- Obtain baseline results and memory/throughput readings with a supported quantized inference configuration.
+- Only after baseline success, attempt capped LoRA/QLoRA on a supported compatible GPU configuration.
+- Record model revision, hyperparameters, compute time, peak VRAM, failures, baseline and adapter scores.
+- **Exit gate:** reproducible evaluated adapter **or** an honest blocked-by-compute/compatibility result.
 
-## Week 5–6: Compact comparison
-- Compare Phi-4 14B and, if feasible, a 14B reasoning-oriented checkpoint.
-- Evaluate Hindi/Punjabi/Haryanvi/English understanding and code/tool-use tasks.
-- Include negative controls and held-out examples to detect overfitting.
-- **Exit gate:** comparable tables with uncertainty and compute-cost analysis.
+## Week 6–8: Experiment 002 — Gemma 4 26B-A4B
+- Follow [EXP002](experiments/EXP002_GEMMA4_26B.md).
+- Validate model access, tokenizer/architecture support, low-memory inference and an MoE-compatible adapter recipe.
+- Run a bounded training experiment only if compatibility, license/data rights and hardware gates pass.
+- Compare against the same evaluation protocol while documenting architecture differences.
+- **Exit gate:** reproducible evaluated adapter **or** a documented reason to defer.
 
-## Week 7–8: 26–27B feasibility
-- Assess Qwen3.8-27B and Gemma 4 26B-A4B with model-specific architectures.
-- Test tokenizer support and quantized inference first, then LoRA only if a supported recipe and sufficient VRAM are available.
-- **Exit gate:** a repeatable memory and throughput profile, not a forced training run.
+## Week 9–10: Compare and reproduce
+- Compare both models using identical held-out datasets, task rubrics and known hardware configurations.
+- Report language-wise task correctness, code tests, structured output accuracy, latency, throughput, VRAM and compute cost.
+- Rerun the best feasible experiment and investigate regressions.
 
-## Week 9–10: Large and mixture-of-experts models
-- Review licensing, memory budgets, distributed training libraries and available compute for Llama 3.3 70B, DeepSeek V4.1 Flash, GLM-5.3 and Qwen3.8 2.4T.
-- Attempt only short, bounded feasibility experiments if compatible compute and permissions are granted.
-- Do not assume free notebooks can train hundreds-of-billions or trillion-parameter checkpoints.
-- **Exit gate:** validated cost/feasibility report or documented reasons to defer.
+## Week 11–12: Publish technical evidence
+- Release reproducible benchmark definitions and scripts, experiments and failure logs as appropriate.
+- Publish technical findings with exact versions and limitations.
+- Release compatible adapters only if upstream licensing and dataset rights permit.
+- **Only then** revisit Qwen3-14B, Phi-4, Llama 3.3 70B, DeepSeek V4.1, GLM-5.3 and Qwen3.8 Max.
 
-## Week 11–12: Reproduction and publication
-- Rerun the most promising supported experiment.
-- Check multilingual regressions, held-out performance, safety of generated output and hardware-cost totals.
-- Publish evaluation scripts, aggregate measurements, experiment cards, and limitations.
-- Publish adapters only when model and data permissions allow.
+## Compute and stop rules
+- Use free research GPU allocations first; their availability, memory and session limits are not guaranteed.
+- Do not reuse the SAINI AI Songs training environment or ACE-Step XL Modal credits without separate approval.
+- Stop if licenses, data rights, hardware or dependencies do not meet the experiment requirements.
+- Do not claim giant-model full fine-tuning or zero-cost continuous hosting.
 
-## Decision gates
-- **Go:** statistically credible improvement on held-out tasks plus reproducibility and acceptable costs.
-- **Revise:** mixed outcomes, memory issues, or high error rates.
-- **Stop:** no valid data rights, license noncompliance, unavailable hardware, unaffordable compute, or unacceptable quality regression.
-
-## What is not promised
-No grant approval, model ownership transfer, guaranteed performance uplift, giant-model training completion, or zero-cost 24/7 inference is implied by this roadmap.
+No grant approval, training success, or model ownership transfer is implied.
