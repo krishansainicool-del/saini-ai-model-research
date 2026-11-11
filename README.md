@@ -1,54 +1,51 @@
 # SAINI AI — Open Model Research
 
-**Status: planning and baseline preparation.** This repository documents proposed work. It does not claim completed fine-tuning runs, benchmark improvements, awarded grants, or exclusive ownership of third-party foundation models.
+**Status: planning and GPU preflight preparation.** No training job, evaluated checkpoint, awarded compute grant, or benchmark improvement is claimed in this repository.
 
-SAINI AI is an independent developer-led research project in India studying **compute-efficient adaptation and reproducible evaluation of open-weight AI models**. The initial evaluation languages are Hindi, Punjabi, Haryanvi, and English. Research also covers coding, instruction following, structured outputs, and tool-use reliability.
+SAINI AI is an independent developer-led research project in India investigating **compute-efficient adaptation and reproducible evaluation of open-weight AI models**, initially in Hindi, Punjabi, Haryanvi, and English. Additional targets include coding, instruction following, structured outputs and tool-use reliability.
 
-## Research goals
+## Current priority: two 26–27B-class models
 
-- Establish trustworthy baselines before any fine-tuning.
-- Measure whether LoRA/QLoRA adapters improve clearly defined multilingual tasks without causing regressions.
-- Compare VRAM use, throughput, latency, training time, and cost across model sizes and quantization methods.
-- Explore architecture-appropriate and license-compliant ways to evaluate larger mixture-of-experts checkpoints.
-- Publish methods and aggregate findings where data rights and model licenses permit.
+**We are starting with these two models, in this order:**
 
-## Candidate model inventory
+| Order | Candidate checkpoint | Research objective | Status |
+| --- | --- | --- | --- |
+| **1** | [Qwen3.8 27B](https://huggingface.co/Qwen/Qwen3.8-27B) | Multilingual instruction-following and coding; quantized baseline, then LoRA/QLoRA feasibility | **Preflight planned; not trained** |
+| **2** | [Gemma 4 26B-A4B](https://huggingface.co/google/gemma-4-26B-A4B-it) | Multilingual evaluation and mixture-of-experts adaptation using architecture-compatible tooling | **Preflight planned; not trained** |
 
-| Model | Planned role | Current status |
-| --- | --- | --- |
-| [Qwen3-14B](https://huggingface.co/Qwen/Qwen3-14B) | First multilingual QLoRA baseline | Not started |
-| [Phi-4](https://huggingface.co/microsoft/phi-4) | Compact comparison model | Not started |
-| [Qwen3.8-27B](https://huggingface.co/Qwen/Qwen3.8-27B) | Larger multilingual/coding model | Feasibility pending |
-| [Gemma 4 26B-A4B](https://huggingface.co/google/gemma-4-26B-A4B-it) | Mixture-of-experts adaptation | Feasibility pending |
-| [Llama 3.3 70B](https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct) | 70B-class experiments | License/hardware review pending |
-| [DeepSeek V4.1 Flash](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash) | Giant-model feasibility research | No training scheduled |
-| [GLM-5.3](https://huggingface.co/zai-org/GLM-5.3) | Giant-model feasibility research | No training scheduled |
-| [Qwen3.8 2.4T-A95B](https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B) | Very-large-scale system study | No training scheduled |
+Model links reflect candidate identifiers, **not verified pinned revisions**. Confirm model identity, access, exact license and supported fine-tuning recipe before any download or training. These are two independent training tracks; the second will not consume compute until its own gate passes.
 
-The inventory is a **research wishlist**, not a promise that all models can be trained for free. For every checkpoint, confirm the exact repository revision, applicable license and availability before downloading or adapting. Open weights do not transfer ownership of the foundation model.
+**Free-compute-first rule:** Test GPU memory, disk, framework support, checkpoint accessibility and baseline feasibility on a separate Kaggle research notebook before allocating paid GPUs or Modal credits. Kaggle T4 devices do not automatically pool their VRAM; fitting 26–27B adapters is **not assured**. Do not make unbounded downloads. Dedicated larger-memory GPU experiments require explicit approval and available credit.
 
-## Methodology at a glance
+- [GPU preflight notebook](notebooks/00_gpu_preflight.ipynb) — **does not download a model or start training**
+- [Experiment 001: Qwen3.8 27B](experiments/EXP001_QWEN38_27B.md)
+- [Experiment 002: Gemma 4 26B](experiments/EXP002_GEMMA4_26B.md)
+- [Updated 12-week roadmap](RESEARCH_ROADMAP.md)
+- [Evaluation protocol](EVALUATION_PROTOCOL.md)
+- [Compute, licensing and safety safeguards](COMPUTE_AND_SAFETY.md)
 
-1. Freeze a dataset and evaluation split. Use legitimately sourced, permissioned data.
-2. Record exact upstream model revision, license, tokenizer, prompts, hardware and seed.
-3. Evaluate the unmodified model first.
-4. Run one controlled parameter-efficient fine-tuning experiment.
-5. Re-evaluate on the same held-out tasks; report gains, regressions and uncertainty.
-6. Publish reproducible configurations, aggregate results and limitations; do not publish secrets or private data.
+## Other candidate models — deferred until the first two are evaluated
 
-**Project documentation**
-- [12-week research roadmap](RESEARCH_ROADMAP.md)
-- [Evaluation protocol and report template](EVALUATION_PROTOCOL.md)
-- [Compute, licensing and data safeguards](COMPUTE_AND_SAFETY.md)
+| Model | Current status |
+| --- | --- |
+| [Qwen3-14B](https://huggingface.co/Qwen/Qwen3-14B) | Deferred |
+| [Phi-4](https://huggingface.co/microsoft/phi-4) | Deferred |
+| [Llama 3.3 70B](https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct) | Deferred; license/hardware review required |
+| [DeepSeek V4.1 Flash](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash) | Deferred; distributed-compute research |
+| [GLM-5.3](https://huggingface.co/zai-org/GLM-5.3) | Deferred; distributed-compute research |
+| [Qwen3.8 Max](https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B) | Deferred; giant-model feasibility research |
 
-## First experiment
+This inventory is a research plan, **not** a claim that all checkpoints can be trained for free.
 
-The initial target is **Qwen3-14B QLoRA** on an available free 16GB-class GPU, subject to a small memory smoke test. If it fails to fit or complete within the available session/quota, lower sequence length or use an appropriately smaller licensed checkpoint for pipeline verification before spending money. No training job is claimed complete.
+## Reproducible research approach
 
-## Open research and collaboration
+1. Verify the upstream model, revision, license, tokenizer and training-tool compatibility.
+2. Freeze a permissioned training/development/held-out evaluation dataset.
+3. Measure available memory/disk and evaluate the **unmodified checkpoint** first.
+4. Attempt a resource-capped adapter training run **only after a feasible hardware plan exists**.
+5. Re-evaluate with the same held-out tasks; publish improvements **and regressions**, hardware use and limitations.
+6. Preserve upstream notices; publish adapters only where underlying rights permit.
 
-Planned outputs: benchmark definitions, evaluation scripts, experiment manifests, memory/cost measurements, and technical notes. Checkpoint or adapter publication depends on upstream licenses and rights to the training data.
+Planned public outputs are experimental configurations, benchmark methodology, aggregate results, hardware/cost measurements, and technical notes. This repository does not contain production source, customer data, secrets or private application code. SAINI AI Songs Kaggle jobs and Modal ACE-Step XL credits remain out of scope.
 
-SAINI AI's production services, customer data, credentials, Kaggle music-generation pipelines and private application code are **out of scope** for this public repository. Never publish API keys, environment files, customer information or private model artifacts.
-
-Maintained independently in India. Research contact can be provided through GitHub issues.
+For research discussions, use the GitHub Issues tab.
